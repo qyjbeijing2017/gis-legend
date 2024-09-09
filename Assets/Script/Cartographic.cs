@@ -1,12 +1,40 @@
 using System;
+using UnityEngine;
 
 [Serializable]
 public struct Cartographic {
-    public double longitude;
-    public double latitude;
-    public double height;
+    [SerializeField]
+    private double _longitude;
+    [SerializeField]
+    private double _latitude;
+    [SerializeField]
+    private double _height;
+    public double longitude {
+        get {
+            return _longitude;
+        }
+        set {
+            _longitude = value;
+        }
+    }
+    public double latitude {
+        get {
+            return _latitude;
+        }
+        set {
+            _latitude = value;
+        }
+    }
+    public double height {
+        get {
+            return _height;
+        }
+        set {
+            _height = value;
+        }
+    }
 
-    public double longitudeDegrees {
+    public double longitudeRadius {
         get {
             return longitude * 180.0 / Math.PI;
         }
@@ -15,7 +43,7 @@ public struct Cartographic {
         }
     }
 
-    public double latitudeDegrees {
+    public double latitudeRadius {
         get {
             return latitude * 180.0 / Math.PI;
         }
@@ -25,9 +53,9 @@ public struct Cartographic {
     }
 
     public Cartographic(double longitude = 0, double latitude = 0, double height = 0) {
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.height = height;
+        this._longitude = longitude;
+        this._latitude = latitude;
+        this._height = height;
     }
 
     public static Cartographic operator +(Cartographic a, Cartographic b) {
@@ -71,7 +99,7 @@ public struct Cartographic {
         return longitude.GetHashCode() ^ latitude.GetHashCode() ^ height.GetHashCode();
     }
 
-    public static Cartographic fromDegrees(double longitude, double latitude, double height) {
+    public static Cartographic fromRadius(double longitude, double latitude, double height) {
         return new Cartographic(longitude * Math.PI / 180.0, latitude * Math.PI / 180.0, height);
     }
 }

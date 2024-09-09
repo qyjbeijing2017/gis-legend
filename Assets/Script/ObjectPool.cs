@@ -31,6 +31,7 @@ public class ObjectPool : ScriptableObject{
     }
 
     public void ReturnObject(GameObject obj){
+        obj.BroadcastMessage("OnReturnToPool", SendMessageOptions.DontRequireReceiver);
         obj.SetActive(false);
         pool.Enqueue(obj);
     }

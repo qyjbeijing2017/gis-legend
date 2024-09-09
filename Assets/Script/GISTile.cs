@@ -1,10 +1,12 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GISTile : MonoBehaviour
 {
+    public float TileSize = 0.1f;
+    MapTile _mapTile { get; set; }
+    bool _isLoaded = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,33 +16,40 @@ public class GISTile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
-    public IEnumerator LinkTile(MapTile position)
-    {
-        Global.Instance.OnPositionChanged += OnPositionChanged;
-        yield return Global.Instance.Layers[0].LoadTile(position);
-        this.transform.localPosition = new Vector3(
-            (float)(position.position.x - Global.Instance.relativePosition.x),
-            0, 
-            (float)(position.position.y - Global.Instance.relativePosition.z)
-        );
+        if (!_isLoaded)
+        {
+            return;
+        }
+
+        var sizeLevel = (float)Math.Pow(2, Global.Instance.level - _mapTile.matrix);
         this.transform.localScale = new Vector3(
-            (float)position.size.x / Global.Instance.TileSize, 
-            1, 
-            (float)position.size.y / Global.Instance.TileSize
+            sizeLevel * TileSize,
+            1,
+            sizeLevel * TileSize
         );
-        GetComponent<Renderer>().material.mainTexture = Global.Instance.Layers[0].GetTile(position);
+
+        var positionLevel = (float)Math.Pow(2, Global.Instance.level - 1);
+        this.transform.localPosition = new Vector3(
+            (float)(_mapTile.center.longitude - Global.Instance.RelativePosition.longitude) / 180 * positionLevel,
+            0,
+            (float)(_mapTile.center.latitude - Global.Instance.RelativePosition.latitude) / 90 * positionLevel
+        );
     }
 
-    void OnPositionChanged(Cartesian3 oldPosition, Cartesian3 newPosition)
+    public IEnumerator LinkTile(MapTile mapTile)
     {
-        var delta = newPosition - oldPosition;
-        transform.position += new Vector3((float)delta.x, 0, (float)delta.z);
+        yield return Global.Instance.Layers[0].LoadTile(mapTile);
+        GetComponent<Renderer>().material.mainTexture = Global.Instance.Layers[0].GetTile(mapTile);
+        this._mapTile = mapTile;
+        this._isLoaded = true;
+    }
+
+    public void OnReturnToPool()
+    {
+        _isLoaded = false;
     }
 
     void OnDisable()
     {
-        Global.Instance.OnPositionChanged -= OnPositionChanged;
     }
 }
