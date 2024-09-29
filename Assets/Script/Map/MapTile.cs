@@ -11,17 +11,24 @@ public struct MapTile
     public int totalCol { get;}
 
     public int totalRow { get; }
-    public Cartographic center { get; }
+
+    public MapTile parent { get { return GetTilePosition(matrix - 1, row / 2, col / 2); } }
+
+    public MapTile child00 { get { return GetTilePosition(matrix + 1, row * 2, col * 2); } }
+
+    public MapTile child01 { get { return GetTilePosition(matrix + 1, row * 2, col * 2 + 1); } }
+
+    public MapTile child10 { get { return GetTilePosition(matrix + 1, row * 2 + 1, col * 2); } }
+
+    public MapTile child11 { get { return GetTilePosition(matrix + 1, row * 2 + 1, col * 2 + 1); } }
+
     private MapTile(int matrix, int row, int col)
     {
         this.matrix = matrix;
         this.row = row;
         this.col = col;
         totalCol = (int)Math.Pow(2, matrix);
-        totalRow = (int)Math.Pow(2, matrix - 1);
-        double lon = 360.0 / totalCol * (col + 0.5) - 180;
-        double lat = 180.0 / totalRow * (row + 0.5) - 90;
-        this.center = new Cartographic(lon, lat);
+        totalRow = (int)Math.Pow(2, matrix);
     }
     public static MapTile GetTilePosition(int TileMatrix, int TileRow, int TileCol)
     {

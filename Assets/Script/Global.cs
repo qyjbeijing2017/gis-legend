@@ -5,61 +5,42 @@ using UnityEngine;
 
 public class Global : MonoSingleton<Global>
 {
-    public List<MapLayer> Layers = new List<MapLayer>();
-    public Cartographic RelativePosition = new Cartographic();
     [SerializeField]
-    [Range(1, 18)]
-    private uint _level = 1;
-    public uint level
-    {
-        get { return _level; }
-        set
-        {
-            if (value < 1)
-            {
-                value = 1;
-            }
-            if (value > 18)
-            {
-                value = 18;
-            }
-            _level = value;
-        }
-    }
+    public Ellipsoid Ellipsoid = Ellipsoid.WGS84;
 
     [SerializeField]
-    public ObjectPool TilePool;
+    MapManager mapManager;
+
     [SerializeField]
-    public LayerMask TerrainLayer;
+    ObjectPool tilePool;
+
     // Start is called before the first frame update
     void Start()
     {
-        TilePool.Initialize();
-        TilePool.parent = transform;
-        CreateTotalMatrix(1);
+        
     }
 
-    void CreateTotalMatrix(int matrix)
-    {
-        for (int row = 0; row < Math.Pow(2, matrix - 1); row++)
-        {
-            for (int col = 0; col < Math.Pow(2, matrix); col++)
-            {
-                StartCoroutine(CreateTile(MapTile.GetTilePosition(matrix, row, col)));
-            }
-        }
-    }
-
-    public IEnumerator CreateTile(MapTile position)
-    {
-        var tile = TilePool.GetObject().GetComponent<GISTile>();
-        yield return tile.LinkTile(position);
-        yield return new WaitForSeconds(60);
-        TilePool.ReturnObject(tile.gameObject);
-    }
     // Update is called once per frame
     void Update()
     {
+        
+    }
 
+    public Cartesian3 SphericalToWorld(Cartographic cartographic)
+    {
+        return new Cartesian3(
+            Ellipsoid.equatorLength * cartographic.longitude / 360,
+            Ellipsoid.equatorLength * Math.Log(Math.Tan(Math.PI / 4 + Math.PI * cartographic.latitude / 360)) / Math.PI,
+            cartographic.height
+        );
+    }
+
+    public Cartographic WorldToSpherical(Cartesian3 world)
+    {
+        return new Cartographic(
+            360 * world.x / Ellipsoid.equatorLength,
+            360 * Math.Atan(Math.Exp(world.y * Math.PI / Ellipsoid.equatorLength)) / Math.PI - 90,
+            world.z
+        );
     }
 }

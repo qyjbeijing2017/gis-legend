@@ -12,9 +12,6 @@ public class MapLayer : ScriptableObject
     private string Token = "448278313c014248463f423b2742025e";
 
     [SerializeField]
-    private string WebToken = "1e2ec3cfd2d5d86d58296c7036165817";
-
-    [SerializeField]
     private int RangeMax = 8;
     private Dictionary<MapTile, Texture2D> tiles = new Dictionary<MapTile, Texture2D>();
 
@@ -38,21 +35,12 @@ public class MapLayer : ScriptableObject
 
     private IEnumerator Request(MapTile position)
     {
-#if UNITY_EDITOR
         string url = Url
             .Replace("{Token}", Token)
             .Replace("{TileMatrix}", position.matrix.ToString())
             .Replace("{TileRow}", position.row.ToString())
             .Replace("{TileCol}", position.col.ToString())
             .Replace("{RandomIndex}", Random.Range(0, RangeMax).ToString());
-#else
-        string url = Url
-            .Replace("{Token}", WebToken)
-            .Replace("{TileMatrix}", position.matrix.ToString())
-            .Replace("{TileRow}", position.row.ToString())
-            .Replace("{TileCol}", position.col.ToString())
-            .Replace("{RandomIndex}", Random.Range(0, RangeMax).ToString());
-#endif
 
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
         {
