@@ -1,18 +1,23 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Global : MonoSingleton<Global>
 {
     [SerializeField]
+    List<MapLayer> _layers = new List<MapLayer>();
+    
+    [SerializeField]
+    MapLayer _terrain;
+
+    [SerializeField]
     public Ellipsoid Ellipsoid = Ellipsoid.WGS84;
 
     [SerializeField]
-    MapManager mapManager;
+    ObjectPool _tilePool;
 
     [SerializeField]
-    ObjectPool tilePool;
+    Cartographic _relativeCenter = new Cartographic(0, 0, 0);
 
     // Start is called before the first frame update
     void Start()

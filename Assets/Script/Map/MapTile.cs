@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public struct MapTile
 {
-    static List<MapTile> TilePositions = new List<MapTile>();
+    static List<MapTile> s_tilePositions = new List<MapTile>();
     public int matrix { get; }
     public int row { get; }
     public int col { get; }
@@ -32,7 +32,7 @@ public struct MapTile
     }
     public static MapTile GetTilePosition(int TileMatrix, int TileRow, int TileCol)
     {
-        foreach (MapTile position in TilePositions)
+        foreach (MapTile position in s_tilePositions)
         {
             if (position.matrix == TileMatrix && position.row == TileRow && position.col == TileCol)
             {
@@ -40,7 +40,7 @@ public struct MapTile
             }
         }
         MapTile tilePosition = new MapTile(TileMatrix, TileRow, TileCol);
-        TilePositions.Add(tilePosition);
+        s_tilePositions.Add(tilePosition);
         return tilePosition;
     }
 }

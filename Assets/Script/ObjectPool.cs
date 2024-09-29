@@ -8,12 +8,12 @@ public class ObjectPool : ScriptableObject{
     protected Queue<GameObject> pool = new Queue<GameObject>();
 
     [HideInInspector]
-    public Transform parent = null;
+    public Transform Parent = null;
 
     public void Initialize(){
         for (int i = 0; i < Size; i++){
             GameObject obj = Instantiate(Prefab);
-            obj.transform.SetParent(parent);
+            obj.transform.SetParent(Parent);
             obj.SetActive(false);
             pool.Enqueue(obj);
         }
@@ -22,7 +22,7 @@ public class ObjectPool : ScriptableObject{
     public GameObject GetObject(){
         if (pool.Count == 0){
             GameObject objNew = Instantiate(Prefab);
-            objNew.transform.SetParent(parent);
+            objNew.transform.SetParent(Parent);
             return objNew;
         }
         var obj = pool.Dequeue();
